@@ -46,8 +46,10 @@ services:
     build: ./rider-service
     depends_on:
       - redis
+      - mongo
     environment:
       REDIS_HOST: redis
+      MONGO_URI: mongodb://mongo:27017/ride-hailing-db
     deploy:
       replicas: 2
 

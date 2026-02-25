@@ -16,7 +16,11 @@ const driverLocationSchema = new mongoose.Schema({
      updateAt:{
         type:Date,
         default:Date.now
-     }
+     },
+     isAvailable: {
+        type: Boolean,
+        default: true
+    }
      
 });
 

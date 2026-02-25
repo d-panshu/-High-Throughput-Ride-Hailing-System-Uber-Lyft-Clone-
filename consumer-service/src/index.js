@@ -1,6 +1,8 @@
 const {Kafka} = require("kafkajs");
 const mongoose = require("mongoose");
 const DriverLocation = require("./models/DriverLocation");
+const Ride = require("./models/RideRequest");
+const RideRequest = require("./models/RideRequest");
 
 
 const kafka = new Kafka({
@@ -16,6 +18,57 @@ const kafka = new Kafka({
 const consumer = kafka.consumer({
   groupId: "location-processor-cg"
 });
+
+async function tryMatchDriver(driverData) {
+
+  const nearestRide = await RideRequest.findOne({
+    status: "pending",
+    pickup: {
+      $near: {
+        $geometry: {
+          type: "Point",
+          coordinates: [driverData.lng, driverData.lat]
+        },
+        $maxDistance: 5000 
+      }
+    }
+  });
+
+
+  if (!nearestRide) {
+    console.log(`No pending rides near Driver ${driverData.driverId}`);
+    return;
+  }
+
+
+  const updatedRide = await RideRequest.findOneAndUpdate(
+    { 
+      _id: nearestRide._id, 
+      status: "pending" 
+    },
+    { 
+      $set: { 
+        status: "matched", 
+        matchedDriverId: driverData.driverId 
+      } 
+    },
+    { new: true }
+  );
+
+  if (!updatedRide) {
+    console.log(`Conflict: Ride ${nearestRide._id} already claimed.`);
+    return;
+  }
+
+  await DriverLocation.findOneAndUpdate(
+    { driverId: driverData.driverId },
+    { $set: { isAvailable: false } }
+  );
+
+  console.log(
+    `Successfully Matched: Rider ${updatedRide.riderId} with Driver ${driverData.driverId}`
+  );
+}
 
 async function start() {
   await mongoose.connect(process.env.MONGO_URI);
@@ -45,6 +98,7 @@ async function start() {
           },
           { upsert: true }
         );
+        await tryMatchDriver(data);
 
         console.log("Location stored:", data.driverId);
       } catch (err) {
