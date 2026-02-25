@@ -49,7 +49,7 @@ services:
       - mongo
     environment:
       REDIS_HOST: redis
-      MONGO_URI: mongodb://mongo:27017/ride-hailing-db
+      MONGO_URI: mongodb://mongo:27017/uber
     deploy:
       replicas: 2
 

@@ -33,6 +33,7 @@ async function tryMatchDriver(driverData) {
       }
     }
   });
+  console.log("Trying to match driver:", driverData.driverId);
 
 
   if (!nearestRide) {
@@ -68,6 +69,20 @@ async function tryMatchDriver(driverData) {
   console.log(
     `Successfully Matched: Rider ${updatedRide.riderId} with Driver ${driverData.driverId}`
   );
+  const producer = kafka.producer();
+  await producer.connect();
+  await producer.send({
+  topic: "ride-matched",
+  messages: [
+    {
+      key: updatedRide.riderId,
+      value: JSON.stringify({
+        riderId: updatedRide.riderId,
+        driverId: driverData.driverId
+      })
+    }
+  ]
+});
 }
 
 async function start() {
