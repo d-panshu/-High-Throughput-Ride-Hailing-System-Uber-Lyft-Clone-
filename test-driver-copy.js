@@ -10,7 +10,7 @@ socket.on("connect",()=>{
     console.log("Connected to driver service");
     setInterval(()=>{
         const locationUpdate={
-            driverId: "driver123",
+            driverId: "driver1345544",
             lat: 37.7749 + (Math.random() - 0.5) * 0.01,
             lng: -122.4194 + (Math.random() - 0.5) * 0.01
         };
