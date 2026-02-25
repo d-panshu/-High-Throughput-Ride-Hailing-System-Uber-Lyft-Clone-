@@ -42,8 +42,8 @@ A production-grade Uber/Lyft clone demonstrating:
 
 | Phase | Status | What's Built |
 |-------|--------|-------------|
-| 1 | ✅ **Current** | Docker infra, Driver WebSocket service, Kafka producer, Consumer service |
-| 2 | 🔜 Next | Rider API, ride request flow |
+| 1 | 🔜 | Docker infra, Driver WebSocket service, Kafka producer, Consumer service |
+| 2 | 🔜 | Rider API, ride request flow |
 | 3 | 🔜 | Matching engine: consumer triggers real-time match notifications |
 | 4 | 🔜 | React frontend: live map with MapLibre |
 | 5 | 🔜 | Nginx load balancer + Node.js cluster |
